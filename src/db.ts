@@ -2,22 +2,42 @@ import { model, Schema, Document } from 'mongoose';
 import { twilioSMS } from "./sms";
 import 'dotenv/config'
 import mongoose from "mongoose"
-let database: mongoose.Connection;
+export let database: mongoose.Connection;
 
-//TODO: make this less gross
+/**
+ * The possible print status values
+ * @typedef {enum} Status
+ * @values 'PENDING', 'ERROR', 'COMPLETE"
+ */
 export enum Status {
     PENDING = 'PENDING',
     ERROR = 'ERROR',
     COMPLETE = 'COMPLETE'
 }
 
+/**
+ * An inbound SMS
+ * @typedef {Object} inboundSMS
+ * @property {string} from - The full number the message is from, incl country code
+ * @property {string} msg - The raw message text
+ * @property {Date} timeStamp - The date/time the message was received by the service
+ * @property {Status} status - The print status of the message (PENDING, ERROR, COMPLETE)
+ */
 interface inboundSMS extends Document {
-    from: string;
-    msg: string;
-    timeStamp: Date;
+    from: string
+    msg: string
+    timeStamp: Date
     status: Status
 }
   
+/**
+ * mongoDB schema for an inbound SMS
+ * @typedef {Schema} inboundSMSSchema
+ * @property {string} from - The full number the message is from, incl country code
+ * @property {string} msg - The raw message text
+ * @property {Date} timeStamp - The date/time the message was received by the service
+ * @property {Status} status - The print status of the message (PENDING, ERROR, COMPLETE)
+ */
 const inboundSMSSchema: Schema = new Schema({
     from: { type: String, required: true },
     msg: { type: String, required: true },
@@ -25,12 +45,17 @@ const inboundSMSSchema: Schema = new Schema({
     status: { type: String, required: false },
 });
 
+/**
+ * @type {mongoose.Model<inboundSMS>}
+ */
 export const InboundSMSModel = model<inboundSMS>("inboundSMS", inboundSMSSchema);
 
-export async function storeInboundSMS(): Promise<void>{
-
-}
-
+/**
+ * Starts a connection to the mongoDB instance
+ *
+ * @return {void}
+ * 
+ */
 export function connectToDB() {
     // add your own uri below
     if (database) {
@@ -54,6 +79,12 @@ export function connectToDB() {
     });
 }
 
+/**
+ * Ends a connection to the mongoDB instance
+ *
+ * @return {void}
+ * 
+ */
 export function disconnectFromDB() {
     if (!database) {
       return;
@@ -61,7 +92,14 @@ export function disconnectFromDB() {
     mongoose.disconnect();
 }
 
-export async function saveSMSToDB(sms: twilioSMS) {
+/**
+ * Stores an incoming SMS in the database
+ *
+ * @param {twilioSMS} sms - the incoming SMS object
+ * @return {inboundSMS} - the saved SMS object with its record id
+ *
+ */
+export async function saveSMSToDB(sms: twilioSMS): Promise<inboundSMS> {
     const isms = new InboundSMSModel({
         from: sms.From,
         msg: sms.Body,
@@ -72,13 +110,39 @@ export async function saveSMSToDB(sms: twilioSMS) {
       return res
 }
 
-export async function getSMSByStatus(status: string) {
+/**
+ * Gets all SMS records in the DB for the given status
+ *
+ * @param {string} status - the status of the SMS records to get e.g 'PENDING'
+ * @return {Promise<inboundSMS[]>} - a promise to return the matching SMS records
+ *
+ */
+export async function getSMSByStatus(status: string): Promise<inboundSMS[]> {
   const result = await InboundSMSModel.find({ status: status }).exec();
   return result;
 }
 
-export async function updateSMSRecord(id: string, status: string) {
+/**
+ * Updates the status of a single SMS record
+ *
+ * @param {string} id - the ID of the SMS record to update
+ * @param {string} status - the status to set e.g 'ERROR'
+ * @return {Promise<inboundSMS | null>} - a promise to return the resulting updated record, or not lol
+ *
+ */
+export async function updateSMSRecord(id: string, status: string): Promise<inboundSMS | null> {
   const result = await InboundSMSModel.findByIdAndUpdate(id, {status: status}).exec()
-  console.log(result);
   return result;
+}
+
+/**
+ * Updates the status of the given SMS records
+ *
+ * @param {inboundSMS[]} records - the records to update
+ * @return {Promise<inboundSMS[] | null>} - a promise to return the resulting updated record, or not lol
+ *
+ */
+export async function updateSMSRecords(records: inboundSMS[]): Promise<inboundSMS[] | null> { //TODO: Implement this
+  //InboundSMSModel.updateMany()
+  return null;
 }

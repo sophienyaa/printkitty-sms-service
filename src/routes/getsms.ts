@@ -3,6 +3,10 @@ import { getSMSByStatus } from "../db";
 
 const router = Router();
 
+/**
+ * Route for getting all SMS's with a given status
+ * @name get/:status
+ */
 router.get("/:status", async (req, res) => {
   try {
     if(req.params.status && typeof req.params.status === "string") { 
