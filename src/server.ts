@@ -1,12 +1,15 @@
 import express from "express"
 import basicAuth from "express-basic-auth"
+import expressPinoLogger from "express-pino-logger";
+import 'dotenv/config'
 import inboundSMSRouter from "./routes/inboundsms"
 import getSMS from "./routes/getsms"
 import updateRouter from "./routes/update"
 import health from "./routes/health"
-import 'dotenv/config'
+import { logger } from './logger';
 
 const app = express();
+app.use(expressPinoLogger({ logger: logger, useLevel: 'debug' }));
 
 if(process.env.AUTH_USERNAME && process.env.AUTH_PASSWORD) {
     const user = process.env.AUTH_USERNAME
