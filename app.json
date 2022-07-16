@@ -1,0 +1,7 @@
+{
+    "name": "printkitty-sms-service",
+    "description": "Send your cat printer a SMS",
+    "repository": "https://github.com/mickwheelz/printkitty-sms-service",
+    "logo": "https://node-js-sample.herokuapp.com/node.png",
+    "keywords": ["node", "express", "static"]
+  }
