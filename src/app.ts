@@ -3,7 +3,7 @@ import app from "./server";
 import { connectToDB } from "./db"
 import { logger } from './logger';
 
-const port = process.env.SERVER_PORT ? process.env.SERVER_PORT : 3000
+const port = process.env.PORT ? process.env.PORT : 3000
 
 try {
     connectToDB()
