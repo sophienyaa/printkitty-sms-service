@@ -4,13 +4,13 @@
 
 ## What is this?
 
-This is a small service that you can run, either locally (if you've got a static IP/DDNS setup) or in the cloud to act as a SMS gateway for [printkitty.js](https://github.com/mickwheelz/printkitty.js).
+This is a small service that you can run, either locally (if you've got a static IP/DDNS setup) or in the cloud (e.g Heroku) to act as a SMS gateway for [printkitty.js](https://github.com/mickwheelz/printkitty.js).
 
 **TLDR;** your cat printer can now receive and print SMSs
 
 ## How does it work?
 
-It uses [twilio](https://www.twilio.com/) as a SMS gateway, [mongoDB](https://www.mongodb.com/) for storing the SMS and exposes a REST API that printkitty.js polls to handle the actual printing part.
+It uses [twilio](https://www.twilio.com/) as a SMS gateway, [MongoDB](https://www.mongodb.com/) for storing the SMS and exposes a REST API that printkitty.js polls to handle the actual printing part.
 
 TODO: Diagram
 
@@ -18,15 +18,26 @@ TODO: Diagram
 
 The service requires a public facing address in order to work with twilio, as well as a mongoDB instance. Both can be run locally if you have the appropriate network setup (static ip/dyn dns and port forwarding)
 
-The simplest way however, is to deploy it to [Heroku](https://www.heroku.com) and use [mongoDB Atlas](https://www.mongodb.com/atlas/database) to host the database. The project can also be built with docker to be used with your cloud provider of choice, kubernetes, etc.
+The simplest way however, is to deploy it to [Heroku](https://www.heroku.com) and use [MongoDB Atlas](https://www.mongodb.com/atlas/database) to host the database. The project can also be built with docker to be used with your cloud provider of choice (GCP, AWS, Azure, etc) or from within kubernetes, etc.
 
-I will detail using it with Heroku & mongoDB Atlas below. If you use another method, skip to the 'Twilio Setup' section
+I will detail using it with Heroku & MongoDB Atlas below. If you use another method, skip to the 'Twilio Setup' section
 
 Once you've got the service up and running, follow the steps in the repo here to setup printkitty.js running on your local machine.
 
-### mongoDB Atlas Setup
+### MongoDB Atlas Setup
 
-//TODO: This
+You will need a MongoDB Atlas account, you can get one [here](https://www.mongodb.com/cloud/atlas/register)
+
+Once registered, follow the below steps
+
+1. Create a Org and Cluster, the 'Shared' clusters are free
+2. Choose a cloud provider and region, ideally the one closest to where your service is hosted
+3. Give the cluster a name and accept the default options and set a user/password
+4. Grant access to your cluster, this is done by IP address
+5. Once its created, click the 'Connect' button, then 'Connect Your Application' 
+6. Get the connection string, replace `<password>` with the password set earlier.
+
+This connection string will be used in the `MONGO_DB_URL` environment variable of your service.
 
 ### Deploying to Heroku
 
@@ -87,12 +98,9 @@ The service exposes the following endpoints.
 
 |Endpoint|Method|Description|Example|
 |--------|------|-----------|-------|
-|`/health`|`GET`|Health check for k8s, etc| `GET /health` |
-|`/getSMS/:status`|`GET`|Gets all SMS for a given status| `GET /getSMS/PENDING` |
+|`/health`|`GET`|Health check for k8s, etc| `GET /health` | |
+|`/getSMS/:status`|`GET`|Gets all SMS for a given status| `GET /getSMS/PENDING` | TODO |
+|`/getSMS`|`GET`|Gets all SMS in the DB | `GET /getSMS` | TODO |
 |`/handleInboundSMS`|`POST`|Accepts incoming SMS from twilio| `POST /handleInboundSMS?From=%2B447000111000&Body=text&...` |
 |`/updateSMSStatus/:id`|`POST`|Updates a single SMS with the given payload| `POST /updateSMSStatus/62c3308c478f3811b45db688 ` <br /> `Body: {"status":"ERROR"}` |
-|`/updateSMSStatus`|`POST`|Updates multiple SMSs with the given payload| TODO |
-
-### Twilio Setup
-
-TODO
+|`/updateSMSStatus`|`POST`| Updates multiple SMSs with the given payload | TODO |
