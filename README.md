@@ -82,25 +82,27 @@ For more on Twilio SMS webhooks, see the docs [here](https://www.twilio.com/docs
 
 ### Environment Variables
 
-The following enviornemnt variables need to be set in order to use the service. This can either be done in the usual fashion (`export ...`), via your cloud provider or using [dotenv](https://www.npmjs.com/package/dotenv)
+The following environment variables need to be set in order to use the service. This can either be done in the usual fashion (`export ...`), via your cloud provider or using a [dotenv](https://www.npmjs.com/package/dotenv) file.
 
 | Variable    | Description | Example |
 |-------------|-------------|---------|
 |MONGO_DB_URL |The full connection url to your mongoDB instance |"mongodb://localhost/printkittySMS"|
 |AUTH_USERNAME|The username to use for the REST API |"admin"|
 |AUTH_PASSWORD|The password to use for the REST API |"secret"|
-|PORT  |The port for the REST API to run on, default 3000 |6969|
-|LOG_LEVEL | The logging level to use, default 'info' | "debug" |
+|PORT  |The port for the REST API to run on, default: 3000 |6969|
+|LOG_LEVEL | The logging level to use, default: "info" | "debug" |
 
 ### API Reference
 
-The service exposes the following endpoints.
+The service exposes the following endpoints;
 
 |Endpoint|Method|Description|Example|
 |--------|------|-----------|-------|
-|`/health`|`GET`|Health check for k8s, etc| `GET /health` | |
-|`/getSMS/:status`|`GET`|Gets all SMS for a given status| `GET /getSMS/PENDING` | TODO |
-|`/getSMS`|`GET`|Gets all SMS in the DB | `GET /getSMS` | TODO |
-|`/handleInboundSMS`|`POST`|Accepts incoming SMS from twilio| `POST /handleInboundSMS?From=%2B447000111000&Body=text&...` |
-|`/updateSMSStatus/:id`|`POST`|Updates a single SMS with the given payload| `POST /updateSMSStatus/62c3308c478f3811b45db688 ` <br /> `Body: {"status":"ERROR"}` |
+|`/health`| `GET` |Health check for k8s, etc| `GET /health` |
+|`/getSMS/:status`| `GET` |Gets all SMS for a given status| `GET /getSMS/PENDING` |
+|`/getSMS`| `GET` |Gets all SMS in the DB | `GET /getSMS` |
+|`/handleInboundSMS`| `POST` | Accepts incoming SMS from twilio| `POST /handleInboundSMS?From=%2B447000111000&Body=text&...` |
+|`/updateSMSStatus/:id`|`POST` | Updates a single SMS with the given payload| `POST /updateSMSStatus/62c3308c478f3811b45db688 ` <br /> `Body: {"status":"ERROR"}` |
 |`/updateSMSStatus`|`POST`| Updates multiple SMSs with the given payload | TODO |
+
+//TODO: Improve this section
