@@ -19,6 +19,7 @@ import { Document } from 'mongoose';
  * @property {Status} status - The print status of the message (PENDING, ERROR, COMPLETE)
  */
 export interface InboundSMS extends Document {
+    to: string,
     from: string,
     msg: string,
     timeStamp: Date,

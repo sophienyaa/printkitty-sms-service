@@ -15,6 +15,7 @@ export let database: mongoose.Connection;
  * @property {Status} status - The print status of the message (PENDING, ERROR, COMPLETE)
  */
 const inboundSMSSchema: Schema = new Schema({
+    to: { type: String, required: true },
     from: { type: String, required: true },
     msg: { type: String, required: true },
     timeStamp: { type: Date, required: true },
@@ -84,6 +85,7 @@ export function disconnectFromDB() {
  */
 export async function saveSMSToDB(sms: TwilioSMSResponse): Promise<InboundSMS> {
     const isms = new InboundSMSModel({
+        to: sms.To,
         from: sms.From,
         msg: sms.Body,
         timeStamp: new Date(),
